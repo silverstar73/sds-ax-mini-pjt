@@ -1,0 +1,68 @@
+[
+  {
+    "name": "미케 비치",
+    "category": "해변",
+    "lat": 16.0544,
+    "lng": 108.2508,
+    "rating": 4.6,
+    "review_count": 1240,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": false
+  },
+  {
+    "name": "바나힐 케이블카",
+    "category": "액티비티",
+    "lat": 15.9977,
+    "lng": 107.9857,
+    "rating": 4.7,
+    "review_count": 3802,
+    "kid_friendly": true,
+    "stroller_ok": false,
+    "kids_menu": true
+  },
+  {
+    "name": "한시장 해산물 골목",
+    "category": "식당",
+    "lat": 16.0678,
+    "lng": 108.2208,
+    "rating": 4.4,
+    "review_count": 956,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "참 박물관",
+    "category": "관광지",
+    "lat": 16.0629,
+    "lng": 108.2229,
+    "rating": 4.5,
+    "review_count": 2110,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": false
+  },
+  {
+    "name": "퍼 홍 쌀국수 노포",
+    "category": "식당",
+    "lat": 16.0705,
+    "lng": 108.2130,
+    "rating": 4.3,
+    "review_count": 640,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "린응사",
+    "category": "관광지",
+    "lat": 16.1010,
+    "lng": 108.2880,
+    "rating": 4.6,
+    "review_count": 5230,
+    "kid_friendly": true,
+    "stroller_ok": false,
+    "kids_menu": false
+  }
+]

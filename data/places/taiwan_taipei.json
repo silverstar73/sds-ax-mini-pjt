@@ -1,0 +1,46 @@
+[
+  {
+    "name": "스펀 천등 마을",
+    "category": "관광지",
+    "lat": 25.0731,
+    "lng": 121.7692,
+    "rating": 4.5,
+    "review_count": 2870,
+    "kid_friendly": true,
+    "stroller_ok": false,
+    "kids_menu": false
+  },
+  {
+    "name": "스린 야시장",
+    "category": "식당",
+    "lat": 25.0879,
+    "lng": 121.5245,
+    "rating": 4.3,
+    "review_count": 9120,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "타이베이 101 전망대",
+    "category": "관광지",
+    "lat": 25.0340,
+    "lng": 121.5645,
+    "rating": 4.6,
+    "review_count": 12400,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": false
+  },
+  {
+    "name": "딘타이펑 신이점",
+    "category": "식당",
+    "lat": 25.0338,
+    "lng": 121.5637,
+    "rating": 4.4,
+    "review_count": 7650,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  }
+]

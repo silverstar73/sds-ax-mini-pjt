@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    :root{
+      --bg:oklch(97% 0.012 75); --surface:oklch(99% 0.007 75); --ink:oklch(23% 0.02 55);
+      --ink-soft:oklch(48% 0.02 55); --line:oklch(88% 0.014 70); --accent:oklch(62% 0.14 40);
+      --accent-ink:oklch(30% 0.06 40); --accent-soft:oklch(93% 0.03 40); --teal:oklch(58% 0.09 200);
+      --teal-soft:oklch(93% 0.02 200);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Public Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    a{color:var(--accent)} a:hover{color:var(--accent-ink)}
+    .disp{font-family:"Newsreader",Georgia,serif}
+  </style>
+</helmet>
+
+<div style="width:1760px;min-height:1300px;background:var(--bg);display:flex;flex-direction:column">
+
+  <!-- top nav -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 48px;border-bottom:1px solid var(--line)">
+    <div class="disp" style="font-size:22px;font-weight:600;letter-spacing:-0.01em">다녀와<span style="color:var(--accent)">.</span></div>
+    <div style="display:flex;align-items:center;gap:28px">
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4"><div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">1</div><span style="font-size:14px">조건 입력</span></div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4"><div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">2</div><span style="font-size:14px">여행지 추천</span></div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:999px;background:var(--accent);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div><span style="font-size:14px;font-weight:600">코스 &amp; 지도</span></div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4"><div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">4</div><span style="font-size:14px">예산</span></div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="padding:32px 48px 0;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="disp" style="font-size:28px;font-weight:600">미국 서부 <span style="font-size:16px;color:var(--ink-soft);font-family:'Public Sans'">· 10일</span></div>
+        <div style="background:var(--accent-soft);color:var(--accent-ink);font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px">다도시 코스</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-top:6px">성인 2 + 아동 1(6세) · 5월 · 샌프란시스코 → 나파밸리 → 요세미티 → 라스베가스</div>
+    </div>
+    <div style="background:var(--ink);color:white;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600">플랜 저장</div>
+  </div>
+
+  <!-- budget + weather -->
+  <div style="padding:24px 48px 0;display:flex;gap:24px">
+    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 26px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:14px;font-weight:700">예산 체크</span>
+        <span style="background:var(--teal-soft);color:var(--teal);font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px">예산 충분</span>
+      </div>
+      <div style="width:100%;height:14px;border-radius:999px;background:var(--bg);overflow:hidden;border:1px solid var(--line)">
+        <div style="width:50%;height:100%;background:var(--accent);border-radius:999px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:9px;font-size:12px;color:var(--ink-soft)">
+        <span>현지 비용 약 750만원</span>
+        <span>예산 1,500만원</span>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--ink-soft)">숙소 300만</span>
+        <span style="font-size:12px;color:var(--ink-soft)">교통 112만</span>
+        <span style="font-size:12px;color:var(--ink-soft)">식비 187만</span>
+        <span style="font-size:12px;color:var(--ink-soft)">액티비티 150만</span>
+      </div>
+      <div style="margin-top:12px;font-size:11.5px;color:var(--accent-ink);background:var(--accent-soft);border-radius:8px;padding:8px 12px">항공권 별도(왕복 3인 약 400~600만원) — 포함 시 총 1,150~1,350만원 예상</div>
+    </div>
+
+    <div style="width:380px;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 26px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:14px;font-weight:700">5월 날씨</span>
+        <span style="background:var(--teal-soft);color:var(--teal);font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px">건기</span>
+      </div>
+      <div style="display:flex;gap:3px;margin-bottom:10px">
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+        <div style="flex:1;height:20px;border-radius:2px;background:var(--teal);border:1.5px solid var(--ink)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+        <div style="flex:1;height:14px;border-radius:2px;background:oklch(80% 0.015 250)"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-soft);line-height:1.55">5월은 맑은 날이 많은 여행 적기예요. 다만 요세미티는 고지대라 밤에 쌀쌀할 수 있어 겉옷을 챙기세요.</div>
+    </div>
+  </div>
+
+  <!-- city stage route -->
+  <div style="padding:28px 48px 0">
+    <div style="font-size:13.5px;font-weight:700;margin-bottom:14px">10일 동선</div>
+    <div style="display:flex;align-items:stretch">
+
+      <!-- SF -->
+      <div style="width:360px;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span class="disp" style="font-size:17px;font-weight:600">샌프란시스코</span>
+          <span style="font-size:11.5px;color:var(--ink-soft)">Day 1~2</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">금문교</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.8</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">피셔맨스 워프 <span style="color:var(--teal);font-size:10px;font-weight:700">키즈메뉴</span></span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.5</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">파월-메이슨 케이블카</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.6</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- connector -->
+      <div style="width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+        <svg width="20" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span style="font-size:10px;color:var(--ink-soft);white-space:nowrap">83km</span>
+      </div>
+
+      <!-- Napa -->
+      <div style="width:360px;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span class="disp" style="font-size:17px;font-weight:600">나파밸리</span>
+          <span style="font-size:11.5px;color:var(--ink-soft)">Day 3</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">나파밸리 와인트레인 <span style="color:var(--teal);font-size:10px;font-weight:700">키즈메뉴</span></span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.5</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">카스텔로 디 아모로사 와이너리</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.7</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- connector -->
+      <div style="width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+        <svg width="20" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span style="font-size:10px;color:var(--ink-soft);white-space:nowrap">272km</span>
+      </div>
+
+      <!-- Yosemite -->
+      <div style="width:360px;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span class="disp" style="font-size:17px;font-weight:600">요세미티</span>
+          <span style="font-size:11.5px;color:var(--ink-soft)">Day 4~6</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">로어 요세미티 폭포 <span style="color:var(--teal);font-size:10px;font-weight:700">유모차</span></span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.8</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">터널 뷰</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.9</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">글레이셔 포인트 <span style="color:var(--ink-soft);font-size:10px;font-weight:700">·개방여부 확인</span></span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.9</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- connector -->
+      <div style="width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+        <svg width="20" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span style="font-size:10px;color:var(--ink-soft);white-space:nowrap">433km</span>
+      </div>
+
+      <!-- Vegas -->
+      <div style="width:360px;flex-shrink:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span class="disp" style="font-size:17px;font-weight:600">라스베가스</span>
+          <span style="font-size:11.5px;color:var(--ink-soft)">Day 7~9</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">벨라지오 분수쇼</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.7</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">M&amp;M'S 월드</span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.4</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12.5px">쉐이크쉑 스트립 <span style="color:var(--teal);font-size:10px;font-weight:700">키즈메뉴</span></span>
+            <span style="font-size:11px;color:var(--ink-soft)">★4.3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:right;margin-top:8px;font-size:11.5px;color:var(--ink-soft)">Day 10 · 라스베가스에서 귀국 · 총 이동 788km</div>
+  </div>
+
+  <!-- kid tips -->
+  <div style="padding:24px 48px 40px">
+    <div style="background:var(--accent-soft);border-radius:16px;padding:20px 26px">
+      <div style="font-size:13.5px;font-weight:700;color:var(--accent-ink);margin-bottom:12px">6세 아이 배려 포인트</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="background:var(--surface);border-radius:999px;padding:8px 16px;font-size:12.5px">매일 오후 휴식 시간 확보</div>
+        <div style="background:var(--surface);border-radius:999px;padding:8px 16px;font-size:12.5px">장거리 이동 1회로 최소화 (요세미티→라스베가스)</div>
+        <div style="background:var(--surface);border-radius:999px;padding:8px 16px;font-size:12.5px">유모차 가능·키즈메뉴 있는 곳 우선 배치</div>
+        <div style="background:var(--surface);border-radius:999px;padding:8px 16px;font-size:12.5px">렌터카 카시트·간식 미리 준비</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    :root{
+      --bg:oklch(97% 0.012 75); --surface:oklch(99% 0.007 75); --ink:oklch(23% 0.02 55);
+      --ink-soft:oklch(48% 0.02 55); --line:oklch(88% 0.014 70); --accent:oklch(62% 0.14 40);
+      --accent-ink:oklch(30% 0.06 40); --accent-soft:oklch(93% 0.03 40); --teal:oklch(58% 0.09 200);
+      --teal-soft:oklch(93% 0.02 200); --map:oklch(94% 0.02 130);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Public Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    a{color:var(--accent)} a:hover{color:var(--accent-ink)}
+    .disp{font-family:"Newsreader",Georgia,serif}
+  </style>
+</helmet>
+
+<div style="width:1680px;min-height:1000px;background:var(--bg);display:flex;flex-direction:column">
+
+  <!-- top nav -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 48px;border-bottom:1px solid var(--line)">
+    <div class="disp" style="font-size:22px;font-weight:600;letter-spacing:-0.01em">다녀와<span style="color:var(--accent)">.</span></div>
+    <div style="display:flex;align-items:center;gap:28px">
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">1</div>
+        <span style="font-size:14px">조건 입력</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">2</div>
+        <span style="font-size:14px">여행지 추천</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:24px;height:24px;border-radius:999px;background:var(--accent);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div>
+        <span style="font-size:14px;font-weight:600">코스 &amp; 지도</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">4</div>
+        <span style="font-size:14px">예산</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="padding:32px 48px 0;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div class="disp" style="font-size:28px;font-weight:600">베트남 · 다낭 <span style="font-size:16px;color:var(--ink-soft);font-family:'Public Sans'">· 3박 4일</span></div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-top:6px">코스와 동선을 한 화면에서 같이 확인하고, 순서를 바로 조정해보세요</div>
+      <div style="font-size:13px;color:var(--accent-ink);margin-top:4px">6세 아이 동반이라 낮잠 시간을 넣고, 하루 이동 거리를 짧게 조정했어요</div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-top:4px">별점·리뷰수는 구글맵 기준이에요 · 지도 아이콘을 누르면 구글맵에서 상세 리뷰를 볼 수 있어요</div>
+    </div>
+    <div style="background:var(--ink);color:white;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600">예산 보기</div>
+  </div>
+
+  <!-- day tabs -->
+  <div style="display:flex;gap:10px;padding:20px 48px 0">
+    <div style="padding:9px 18px;border-radius:999px;background:var(--accent);color:white;font-size:13px;font-weight:700">Day 1 · 도착</div>
+    <div style="padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--ink-soft)">Day 2</div>
+    <div style="padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--ink-soft)">Day 3</div>
+    <div style="padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--ink-soft)">Day 4 · 귀국</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--teal);background:var(--teal-soft);padding:5px 10px;border-radius:999px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M4 6h10a4 4 0 0 1 0 8H8a4 4 0 0 0 0 8h8"/><path d="m17 4 3 2-3 2"/></svg>
+        동선 자동 최적화됨
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)">
+        <div style="width:10px;height:10px;border-radius:999px;background:var(--accent)"></div>총 이동 19.1km
+      </div>
+    </div>
+  </div>
+
+  <!-- course + map, one screen -->
+  <div style="padding:24px 48px 56px;display:flex;gap:28px;align-items:flex-start">
+
+    <!-- timeline column -->
+    <div style="width:560px;flex-shrink:0;display:flex;flex-direction:column">
+
+      <!-- morning -->
+      <div style="display:flex;gap:14px">
+        <div style="width:52px;flex-shrink:0;text-align:right;padding-top:6px">
+          <div style="font-size:11px;font-weight:700;color:var(--ink-soft)">오전</div>
+          <div style="font-size:10.5px;color:var(--ink-soft);margin-top:2px">10:00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div style="width:9px;height:9px;border-radius:999px;background:var(--accent);margin-top:7px"></div>
+          <div style="width:1.5px;flex:1;background:var(--line);margin-top:4px"></div>
+        </div>
+        <div style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:16px">
+          <div style="display:flex;gap:11px;align-items:center;min-width:0">
+            <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="1.6"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+            </div>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="font-size:13.5px;font-weight:600">미케 비치</span>
+                <span style="background:var(--teal-soft);color:var(--teal);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap">유모차 가능</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:2px;font-size:11.5px;color:var(--ink-soft)">
+                <span>해변 · 도보 12분</span>
+                <span style="display:flex;align-items:center;gap:2px;color:var(--ink);font-weight:700">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--ink)" stroke="none"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.6 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+                  4.6
+                </span>
+                <span>(1,240)</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="1.6"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"><path d="M4 20h4L18.5 9.5a2 2 0 0 0-4-4L4 16v4z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- afternoon -->
+      <div style="display:flex;gap:14px">
+        <div style="width:52px;flex-shrink:0;text-align:right;padding-top:6px">
+          <div style="font-size:11px;font-weight:700;color:var(--ink-soft)">오후</div>
+          <div style="font-size:10.5px;color:var(--ink-soft);margin-top:2px">14:00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div style="width:9px;height:9px;border-radius:999px;background:var(--accent)"></div>
+          <div style="width:1.5px;flex:1;background:var(--line);margin-top:4px"></div>
+        </div>
+        <div style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:16px">
+          <div style="display:flex;gap:11px;align-items:center;min-width:0">
+            <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.6"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg>
+            </div>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="font-size:13.5px;font-weight:600">바나힐 케이블카</span>
+                <span style="background:var(--teal-soft);color:var(--teal);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap">키즈존 있음</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:2px;font-size:11.5px;color:var(--ink-soft)">
+                <span>액티비티 · 차량 40분</span>
+                <span style="display:flex;align-items:center;gap:2px;color:var(--ink);font-weight:700">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--ink)" stroke="none"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.6 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+                  4.7
+                </span>
+                <span>(3,802)</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="1.6"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"><path d="M4 20h4L18.5 9.5a2 2 0 0 0-4-4L4 16v4z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- nap / rest -->
+      <div style="display:flex;gap:14px">
+        <div style="width:52px;flex-shrink:0;text-align:right;padding-top:6px">
+          <div style="font-size:11px;font-weight:700;color:var(--ink-soft)">휴식</div>
+          <div style="font-size:10.5px;color:var(--ink-soft);margin-top:2px">17:00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div style="width:9px;height:9px;border-radius:999px;background:var(--ink-soft)"></div>
+          <div style="width:1.5px;flex:1;background:var(--line);margin-top:4px"></div>
+        </div>
+        <div style="flex:1;min-width:0;background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:16px">
+          <div style="display:flex;gap:11px;align-items:center;min-width:0">
+            <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--surface);display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+            </div>
+            <div style="min-width:0">
+              <div style="font-size:13.5px;font-weight:600">숙소에서 휴식 · 낮잠</div>
+              <div style="font-size:11.5px;color:var(--ink-soft);margin-top:2px">아이 컨디션 고려해 자동 삽입</div>
+            </div>
+          </div>
+          <div style="font-size:10.5px;color:var(--ink-soft);font-weight:600;background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap">자동 조정</div>
+        </div>
+      </div>
+
+      <!-- evening -->
+      <div style="display:flex;gap:14px">
+        <div style="width:52px;flex-shrink:0;text-align:right;padding-top:6px">
+          <div style="font-size:11px;font-weight:700;color:var(--ink-soft)">저녁</div>
+          <div style="font-size:10.5px;color:var(--ink-soft);margin-top:2px">19:00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div style="width:9px;height:9px;border-radius:999px;background:var(--accent)"></div>
+        </div>
+        <div style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div style="display:flex;gap:11px;align-items:center;min-width:0">
+            <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="1.6"><path d="M6 3v18M6 3c-2 2-2 5 0 7M18 3v18M18 3c0 4-3 5-3 9v9"/></svg>
+            </div>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="font-size:13.5px;font-weight:600">한시장 해산물 골목</span>
+                <span style="display:flex;align-items:center;gap:3px;background:var(--accent-soft);color:var(--accent-ink);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent-ink)" stroke="none"><path d="M12 21s-7.5-4.6-10-9.3C.5 8.1 2.6 4.5 6.4 4.5c2 0 3.6 1.1 5.6 3.4 2-2.3 3.6-3.4 5.6-3.4 3.8 0 5.9 3.6 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>
+                  내 찜
+                </span>
+                <span style="background:var(--teal-soft);color:var(--teal);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap">키즈메뉴</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:2px;font-size:11.5px;color:var(--ink-soft)">
+                <span>식당 · 도보 6분</span>
+                <span style="display:flex;align-items:center;gap:2px;color:var(--ink);font-weight:700">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--ink)" stroke="none"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.6 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+                  4.4
+                </span>
+                <span>(956)</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="1.6"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"><path d="M4 20h4L18.5 9.5a2 2 0 0 0-4-4L4 16v4z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- map column -->
+    <div style="flex:1;min-width:0;height:640px;border-radius:18px;overflow:hidden;position:relative;background:var(--map)">
+      <svg width="100%" height="100%" viewBox="0 0 900 800" preserveAspectRatio="xMidYMid slice" style="display:block">
+        <rect width="900" height="800" fill="oklch(94% 0.02 130)"/>
+        <path d="M0 520 Q 220 460 380 540 T 900 500 V800 H0 Z" fill="oklch(90% 0.03 220)"/>
+        <path d="M120 0 V800" stroke="oklch(88% 0.015 90)" stroke-width="18"/>
+        <path d="M0 320 H900" stroke="oklch(88% 0.015 90)" stroke-width="14"/>
+        <path d="M520 0 V800" stroke="oklch(91% 0.01 90)" stroke-width="10"/>
+        <path d="M300 210 C 340 300, 420 320, 470 400 S 620 520, 660 610" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/>
+        <g><circle cx="300" cy="210" r="20" fill="var(--accent)"/><text x="300" y="217" text-anchor="middle" font-family="Public Sans" font-size="17" font-weight="700" fill="white">1</text></g>
+        <g><circle cx="470" cy="400" r="20" fill="var(--accent)"/><text x="470" y="407" text-anchor="middle" font-family="Public Sans" font-size="17" font-weight="700" fill="white">2</text></g>
+        <g><circle cx="660" cy="610" r="20" fill="var(--accent)"/><text x="660" y="617" text-anchor="middle" font-family="Public Sans" font-size="17" font-weight="700" fill="white">3</text></g>
+      </svg>
+      <div style="position:absolute;left:20px;bottom:20px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600">Day 1 동선 · 미케 비치 → 바나힐 → 한시장</div>
+      <div style="position:absolute;right:20px;top:20px;display:flex;flex-direction:column;gap:6px">
+        <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">+</div>
+        <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">–</div>
+      </div>
+    </div>
+
+    <!-- sidebar -->
+    <div style="width:300px;flex-shrink:0">
+
+      <!-- saved places -->
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 21s-7.5-4.6-10-9.3C.5 8.1 2.6 4.5 6.4 4.5c2 0 3.6 1.1 5.6 3.4 2-2.3 3.6-3.4 5.6-3.4 3.8 0 5.9 3.6 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>
+          <span style="font-size:13.5px;font-weight:700">내가 찜한 곳</span>
+        </div>
+        <div style="font-size:11px;color:var(--ink-soft);margin-bottom:14px;line-height:1.5">여러 곳을 추가하면 이동 거리가 가장 짧은 순서로 자동 배치돼요</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div>
+              <div style="font-size:13px;font-weight:600">미케 비치</div>
+              <div style="font-size:11.5px;color:var(--ink-soft);margin-top:1px">해변 · 4.6점 · Day 1에 배치됨</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div>
+              <div style="font-size:13px;font-weight:600">한시장 해산물 골목</div>
+              <div style="font-size:11.5px;color:var(--ink-soft);margin-top:1px">식당 · 4.4점 · Day 1에 배치됨</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div style="height:1px;background:var(--line)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div>
+              <div style="font-size:13px;font-weight:600">참 박물관</div>
+              <div style="font-size:11.5px;color:var(--ink-soft);margin-top:1px">관광지 · 4.5점 · 아직 미배치</div>
+            </div>
+            <div style="width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div>
+              <div style="font-size:13px;font-weight:600">퍼 홍 쌀국수 노포</div>
+              <div style="font-size:11.5px;color:var(--ink-soft);margin-top:1px">식당 · 4.3점 · 아직 미배치</div>
+            </div>
+            <div style="width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px">
+        <div style="font-size:13px;font-weight:700;color:var(--ink-soft)">Day 1 예상 비용</div>
+        <div class="disp" style="font-size:26px;font-weight:600;margin-top:8px">약 19만원</div>
+        <div style="height:1px;background:var(--line);margin:16px 0"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px"><span style="color:var(--ink-soft)">이동</span><span>4만원</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px"><span style="color:var(--ink-soft)">액티비티</span><span>9만원</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--ink-soft)">식비</span><span>6만원</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    :root{
+      --bg:oklch(97% 0.012 75); --surface:oklch(99% 0.007 75); --ink:oklch(23% 0.02 55);
+      --ink-soft:oklch(48% 0.02 55); --line:oklch(88% 0.014 70); --accent:oklch(62% 0.14 40);
+      --accent-ink:oklch(30% 0.06 40); --accent-soft:oklch(93% 0.03 40); --teal:oklch(58% 0.09 200);
+      --teal-soft:oklch(93% 0.02 200); --rain:oklch(80% 0.015 250);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Public Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    a{color:var(--accent)} a:hover{color:var(--accent-ink)}
+    .disp{font-family:"Newsreader",Georgia,serif}
+  </style>
+</helmet>
+
+<div style="width:1280px;min-height:900px;background:var(--bg);display:flex;flex-direction:column">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 48px;border-bottom:1px solid var(--line)">
+    <div class="disp" style="font-size:22px;font-weight:600;letter-spacing:-0.01em">다녀와<span style="color:var(--accent)">.</span></div>
+    <div style="display:flex;align-items:center;gap:28px">
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.45">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">1</div>
+        <span style="font-size:14px">조건 입력</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:24px;height:24px;border-radius:999px;background:var(--accent);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div>
+        <span style="font-size:14px;font-weight:600">여행지 추천</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">3</div>
+        <span style="font-size:14px">코스 &amp; 지도</span>
+      </div>
+      <div style="width:28px;height:1px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px;opacity:0.4">
+        <div style="width:24px;height:24px;border-radius:999px;border:1px solid var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center">4</div>
+        <span style="font-size:14px">예산</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:40px 48px 8px">
+    <div class="disp" style="font-size:30px;font-weight:600">300만원 · 성인 2 + 아동 1(6세·여아) · 3월 · 휴양 여행에 맞는 나라 5곳</div>
+    <div style="font-size:14px;color:var(--ink-soft);margin-top:8px">예산 안에서 갈 수 있는 나라들 중, 여행 목적 60% · 동반인 특성 40% 기준으로 골랐어요 · 6세 아이 동반이라 직항 여부·안전도에 가중치를 더했고, 3월 기준 건기/우기도 함께 확인했어요</div>
+  </div>
+
+  <!-- tabs -->
+  <div style="display:flex;gap:4px;padding:20px 48px 0">
+    <div style="padding:12px 22px;font-size:14px;font-weight:700;color:var(--accent-ink);border-bottom:2px solid var(--accent)">AI 추천</div>
+    <div style="padding:12px 22px;font-size:14px;color:var(--ink-soft);border-bottom:2px solid transparent">직접 둘러보기</div>
+  </div>
+  <div style="height:1px;background:var(--line);margin:0 48px"></div>
+
+  <!-- recommended cards -->
+  <div style="padding:28px 48px 48px;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:22px">
+
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="height:150px;background:linear-gradient(135deg, oklch(78% 0.09 40), oklch(70% 0.1 25));display:flex;align-items:flex-start;justify-content:space-between;padding:14px">
+        <div style="display:flex;gap:6px">
+          <div style="background:white;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--accent-ink)">매칭 96%</div>
+          <div style="background:var(--teal);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:white">키즈프렌들리</div>
+        </div>
+        <div class="disp" style="font-size:34px;color:white">越</div>
+      </div>
+      <div style="padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <span class="disp" style="font-size:20px;font-weight:600">베트남 · 다낭</span>
+          <span style="font-size:13px;color:var(--ink-soft)">3박4일</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--ink-soft);line-height:1.55">완만한 해변과 키즈풀 리조트가 많고 인천 직항 5시간대라, 6세 아이와 이동 부담 없이 휴양하기 좋아요</div>
+        <div>
+          <div style="display:flex;gap:3px">
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:20px;border-radius:2px;background:var(--teal);border:1.5px solid var(--ink)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--teal);font-weight:600;margin-top:6px">3월은 건기예요 · 맑은 날이 많아 여행하기 좋아요</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px">
+          <span style="font-size:14px;font-weight:700">약 78만원</span>
+          <div style="background:var(--ink);color:white;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px">코스 만들기</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="height:150px;background:linear-gradient(135deg, oklch(75% 0.07 200), oklch(66% 0.09 220));display:flex;align-items:flex-start;justify-content:space-between;padding:14px">
+        <div style="background:white;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--accent-ink)">매칭 91%</div>
+        <div class="disp" style="font-size:34px;color:white">泰</div>
+      </div>
+      <div style="padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <span class="disp" style="font-size:20px;font-weight:600">태국 · 방콕</span>
+          <span style="font-size:13px;color:var(--ink-soft)">3박4일</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--ink-soft);line-height:1.55">길거리 미식과 마사지·스파가 발달해 있어 짧은 일정에도 알차게 쉴 수 있어요</div>
+        <div>
+          <div style="display:flex;gap:3px">
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:20px;border-radius:2px;background:var(--teal);border:1.5px solid var(--ink)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--teal);font-weight:600;margin-top:6px">3월은 건기예요 · 습도가 낮고 쾌적해요</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px">
+          <span style="font-size:14px;font-weight:700">약 82만원</span>
+          <div style="background:var(--ink);color:white;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px">코스 만들기</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="height:150px;background:linear-gradient(135deg, oklch(80% 0.06 90), oklch(72% 0.08 60));display:flex;align-items:flex-start;justify-content:space-between;padding:14px">
+        <div style="background:white;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--accent-ink)">매칭 88%</div>
+        <div class="disp" style="font-size:34px;color:white">台</div>
+      </div>
+      <div style="padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <span class="disp" style="font-size:20px;font-weight:600">대만 · 타이베이</span>
+          <span style="font-size:13px;color:var(--ink-soft)">3박4일</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--ink-soft);line-height:1.55">야시장 미식 투어와 온천 휴양을 가까운 거리에서 함께 즐길 수 있어요</div>
+        <div>
+          <div style="display:flex;gap:3px">
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:20px;border-radius:2px;background:var(--teal);border:1.5px solid var(--ink)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--rain)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+            <div style="flex:1;height:14px;border-radius:2px;background:var(--teal)"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--teal);font-weight:600;margin-top:6px">3월은 선선한 여행 적기예요</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px">
+          <span style="font-size:14px;font-weight:700">약 74만원</span>
+          <div style="background:var(--ink);color:white;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px">코스 만들기</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

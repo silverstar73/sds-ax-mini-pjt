@@ -1,0 +1,46 @@
+[
+  {
+    "name": "왓 아룬",
+    "category": "관광지",
+    "lat": 13.7437,
+    "lng": 100.4888,
+    "rating": 4.6,
+    "review_count": 4210,
+    "kid_friendly": true,
+    "stroller_ok": false,
+    "kids_menu": false
+  },
+  {
+    "name": "짜뚜짝 주말시장",
+    "category": "쇼핑",
+    "lat": 13.7999,
+    "lng": 100.5500,
+    "rating": 4.5,
+    "review_count": 8890,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "티팁싸마이 팟타이",
+    "category": "식당",
+    "lat": 13.7515,
+    "lng": 100.4979,
+    "rating": 4.3,
+    "review_count": 3120,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "아시아티크 더 리버프론트",
+    "category": "액티비티",
+    "lat": 13.7050,
+    "lng": 100.5030,
+    "rating": 4.4,
+    "review_count": 6540,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  }
+]

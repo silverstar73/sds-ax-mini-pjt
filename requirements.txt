@@ -1,0 +1,16 @@
+# 공통 (레포 루트 requirements.txt와 동일 계열, Bedrock 기반)
+boto3
+python-dotenv
+langchain
+langchain-aws
+langgraph
+
+# RAG (국가 노트 검색)
+langchain-chroma
+
+# 장소 검증 (Google Places 실 API 연동 시)
+requests
+
+# API 서버 (POST /query)
+fastapi
+uvicorn
