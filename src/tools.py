@@ -12,6 +12,16 @@ from langchain_core.tools import tool
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
 
+def _format_krw(amount: int) -> str:
+    """금액을 '만원' 단위 한국어 표기로 바꾼다. "560,000원"처럼 콤마로 묶은 숫자는
+    LLM이 자릿수를 잘못 옮겨 적는(예: 56만원을 560만원으로) 사고가 잦아, 한국어 관용 단위로 미리 변환해 둔다.
+    """
+    man = amount / 10000
+    if man == int(man):
+        return f"{int(man):,}만원"
+    return f"{man:,.1f}만원"
+
+
 def _purpose_list(purpose: str) -> list[str]:
     """쉼표나 공백으로 구분된 목적 문자열을 목적 단어 리스트로 나눈다."""
     return [p.strip() for p in purpose.replace(",", " ").split() if p.strip()]
@@ -22,7 +32,7 @@ def _format_country_line(country: dict, score: float, total_cost: int) -> str:
     reason = country["notes"].split(".")[0] + "."
     return (
         f"- {country['country']} · {country['city']} (slug: {country['slug']}) "
-        f"매칭 {round(score * 100)}% · 예상 총비용 약 {total_cost:,}원\n"
+        f"매칭 {round(score * 100)}% · 예상 총비용 약 {_format_krw(total_cost)}\n"
         f"  이유: {reason}"
     )
 
@@ -65,7 +75,7 @@ def score_countries(
 
     if not candidates:
         return (
-            f"예산 {budget_krw:,}원({days}일 기준)으로 조건에 맞는 국가를 찾지 못했습니다. "
+            f"예산 {_format_krw(budget_krw)}({days}일 기준)으로 조건에 맞는 국가를 찾지 못했습니다. "
             "예산을 늘리거나 여행 기간을 줄여서 다시 요청해 주세요."
         )
 
@@ -246,9 +256,9 @@ def estimate_budget(slug: str, days: int, companions_count: int = 1) -> str:
         "식비": round(total * 0.25),
         "액티비티": round(total * 0.20),
     }
-    lines = [f"- {k}: 약 {v:,}원" for k, v in breakdown.items()]
+    lines = [f"- {k}: 약 {_format_krw(v)}" for k, v in breakdown.items()]
     return (
-        f"{country['country']} {country['city']} {days}일 · {companions_count}인 예상 총비용: 약 {total:,}원\n"
+        f"{country['country']} {country['city']} {days}일 · {companions_count}인 예상 총비용: 약 {_format_krw(total)}\n"
         + "\n".join(lines)
         + "\n(평균값 기반 추정치이며 실시간 가격이 아닙니다)"
     )

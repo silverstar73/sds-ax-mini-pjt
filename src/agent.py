@@ -1,12 +1,10 @@
 """해외여행플래너 LangGraph 단일 Agent."""
 
-import os
-
 from dotenv import load_dotenv
 from langchain.agents import create_agent
-from langchain_aws import ChatBedrockConverse
 
 from guardrails import InjectionLogMiddleware, PiiGuardrailMiddleware
+from llm import build_resilient_model
 from retriever import search_country_notes
 from tools import (
     estimate_budget,
@@ -19,10 +17,6 @@ from tools import (
 
 load_dotenv()
 
-BEDROCK_MODEL_ID = os.environ.get(
-    "BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
-)
-
 SYSTEM_PROMPT = """당신은 해외여행플래너 서비스의 여행 설계 담당자입니다. 가장 중요한 일은 "장소 검증"과 "코스 생성"이고, 나머지는 그것을 돕는 보조 기능입니다.
 
 [핵심] 장소 검증 + 코스 생성
@@ -34,6 +28,7 @@ SYSTEM_PROMPT = """당신은 해외여행플래너 서비스의 여행 설계 �
 
 [핵심을 돕는 가벼운 기능] 국가 필터링
 - 목적지를 아직 못 정한 사용자에게만 해당합니다. 국가는 이미 좁혀 둔 인기 국가 목록 안에서 고르는 것이므로, score_countries로 예산·목적·동반인 조건에 맞는 후보만 간단히 추리고, 그 이상 정교하게 다듬으려 하지 않습니다. 도구가 찾지 못하면 그 사실을 그대로 전달하고 예산에 맞는 나라를 지어내지 않습니다.
+- score_countries가 돌려준 국가만 후보로 제시합니다. 목록에 없는 국가를 "이 목적에도 맞을 것 같다"고 스스로 판단해서 끼워 넣지 않습니다.
 
 [시간이 허락될 때만] 동선 최적화
 - 사용자가 찜한 장소를 여러 곳 코스에 추가할 때는 optimize_route로 방문 순서를 재배열할 수 있습니다. 다만 이는 부가 기능이므로, 장소 검증과 코스 생성 품질을 항상 우선합니다. 사용자가 순서를 직접 지정했다면 그 순서를 존중합니다.
@@ -44,10 +39,11 @@ SYSTEM_PROMPT = """당신은 해외여행플래너 서비스의 여행 설계 �
 - 정형 조건으로 답하기 어려운 자유 질문(치안, 비자, 여행 팁 등)은 search_country_notes로 근거를 찾아 답하고, 근거가 없으면 정보가 부족하다고 먼저 밝힙니다.
 
 - 모든 도구 결과에 없는 내용을 추측해서 채우지 않고, 근거가 부족하면 부족하다고 먼저 말합니다.
+- 도구가 알려준 금액과 단위(예: "56만원")는 그대로 옮겨 적습니다. 원 단위·만원 단위를 헷갈리거나 자릿수를 임의로 바꾸지 않습니다.
 - 항상 한국어로 답합니다.
 """
 
-model = ChatBedrockConverse(model=BEDROCK_MODEL_ID)
+model = build_resilient_model()
 
 agent = create_agent(
     model=model,
