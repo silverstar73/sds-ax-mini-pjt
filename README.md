@@ -39,7 +39,7 @@
 모델 호출 자체도 `src/llm.py`의 `ResilientChatBedrock`을 통해, Sonnet 4.5/4.6 → Haiku → Nova 순으로 쓰로틀링 시 자동 전환되도록 감싸져 있다 (agent/judge 공용).
 
 ## 실행 방법
-1. 레포 루트 `.env`에 AWS 자격 증명이 있어야 합니다 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`) — Bedrock 모델·임베딩 호출용. `GOOGLE_MAPS_API_KEY`는 선택 사항(없으면 로컬 큐레이션 장소 데이터로 검증).
+1. 이 프로젝트 루트에 `.env` 파일을 만들고 AWS 자격 증명을 넣어야 합니다 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`) — Bedrock 모델·임베딩 호출용. `.gitignore`에 이미 포함돼 있어 커밋되지 않습니다. `GOOGLE_MAPS_API_KEY`는 선택 사항(없으면 로컬 큐레이션 장소 데이터로 검증).
 2. `pip install -r requirements.txt`
 3. CLI 데모: `./run.sh` (내부적으로 `cd src && python agent.py`)
 4. API 서버: `./run.sh api` → `POST http://localhost:8000/query` `{"question": "..."}` → `{answer, contexts, trace}`
