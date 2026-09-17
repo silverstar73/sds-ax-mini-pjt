@@ -42,5 +42,49 @@
     "kid_friendly": true,
     "stroller_ok": true,
     "kids_menu": true
+  },
+  {
+    "name": "왕궁(그랜드 팰리스)",
+    "category": "관광지",
+    "lat": 13.7500,
+    "lng": 100.4913,
+    "rating": 4.6,
+    "review_count": 52000,
+    "kid_friendly": true,
+    "stroller_ok": false,
+    "kids_menu": false
+  },
+  {
+    "name": "왓포(와불사원)",
+    "category": "관광지",
+    "lat": 13.7465,
+    "lng": 100.4930,
+    "rating": 4.6,
+    "review_count": 21000,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": false
+  },
+  {
+    "name": "카오산로드",
+    "category": "쇼핑",
+    "lat": 13.7590,
+    "lng": 100.4977,
+    "rating": 4.2,
+    "review_count": 15000,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
+  },
+  {
+    "name": "시암파라곤",
+    "category": "쇼핑",
+    "lat": 13.7462,
+    "lng": 100.5347,
+    "rating": 4.6,
+    "review_count": 45000,
+    "kid_friendly": true,
+    "stroller_ok": true,
+    "kids_menu": true
   }
 ]

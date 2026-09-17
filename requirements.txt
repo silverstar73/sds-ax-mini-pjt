@@ -14,3 +14,6 @@ requests
 # API 서버 (POST /query)
 fastapi
 uvicorn
+
+# 단위 테스트 (tests/)
+pytest

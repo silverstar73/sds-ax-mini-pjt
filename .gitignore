@@ -3,3 +3,4 @@ __pycache__/
 chroma_db/
 guard_audit.log
 .env
+.pytest_cache/

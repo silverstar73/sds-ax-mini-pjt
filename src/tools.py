@@ -48,12 +48,14 @@ def score_countries(
 ) -> str:
     """예산·동반인·여행 목적 조건으로 국가를 1차 필터링하고 스코어링해 상위 후보를 추천한다.
     budget_krw는 1인 총 여행 예산(원), purpose는 "휴양,미식"처럼 쉼표나 공백으로 구분한 목적,
-    companions는 "성인 2 아동 1(6세)"처럼 동반인 구성을 적은 자유 텍스트다.
+    companions는 "성인 2 아동 1(6세)", "부모님 모시고 효도여행", "여자친구랑 커플여행"처럼
+    동반인 구성을 적은 자유 텍스트다. 동반인 유형(가족·효도여행·커플·친구·혼자)에 따라 안전도 가중치가 달라진다.
     month은 1~12 여행 예정 월(모르면 0), preferred_country는 사용자가 직접 지정한 국가명(없으면 빈 문자열)이다.
     예산 조건에 맞는 국가가 하나도 없으면 그 사실만 안내하고 지어내지 않는다.
     """
     requested_purposes = _purpose_list(purpose)
     has_child = any(k in companions for k in ["아동", "미취학", "영유아", "아기", "유아"])
+    has_senior = any(k in companions for k in ["부모님", "부모", "어르신", "시니어", "효도", "노부모"])
 
     candidates = []
     for country in load_countries():
@@ -69,7 +71,8 @@ def score_countries(
         else:
             purpose_score = 0.5
 
-        companion_score = country["safety_level"] / 5 if has_child else 0.6
+        # 아동·시니어 동반은 안전도를 더 중요하게 보고, 커플·친구·혼자는 기존과 동일하게 취급한다.
+        companion_score = country["safety_level"] / 5 if (has_child or has_senior) else 0.6
         score = purpose_score * 0.6 + companion_score * 0.4
         candidates.append((score, country, total_cost))
 
