@@ -32,7 +32,7 @@ def _format_country_line(country: dict, score: float, total_cost: int) -> str:
     reason = country["notes"].split(".")[0] + "."
     return (
         f"- {country['country']} · {country['city']} (slug: {country['slug']}) "
-        f"매칭 {round(score * 100)}% · 예상 총비용 약 {_format_krw(total_cost)}\n"
+        f"매칭 {round(score * 100)}% · 예상 총비용(왕복 항공료 포함) 약 {_format_krw(total_cost)}\n"
         f"  이유: {reason}"
     )
 
@@ -51,6 +51,7 @@ def score_countries(
     companions는 "성인 2 아동 1(6세)", "부모님 모시고 효도여행", "여자친구랑 커플여행"처럼
     동반인 구성을 적은 자유 텍스트다. 동반인 유형(가족·효도여행·커플·친구·혼자)에 따라 안전도 가중치가 달라진다.
     month은 1~12 여행 예정 월(모르면 0), preferred_country는 사용자가 직접 지정한 국가명(없으면 빈 문자열)이다.
+    반환되는 예상 총비용은 현지 체류비(숙소·교통·식비·액티비티)에 왕복 항공료까지 더한 금액이다.
     예산 조건에 맞는 국가가 하나도 없으면 그 사실만 안내하고 지어내지 않는다.
     """
     if budget_krw <= 0:
@@ -64,7 +65,7 @@ def score_countries(
     for country in load_countries():
         if preferred_country and preferred_country not in (country["country"], country["city"]):
             continue
-        total_cost = country["avg_daily_cost_krw"] * days
+        total_cost = country["avg_daily_cost_krw"] * days + country["round_trip_flight_krw"]
         if total_cost > budget_krw:
             continue
 
@@ -247,7 +248,7 @@ def optimize_route(slug: str, place_names: list[str]) -> str:
 
 @tool
 def estimate_budget(slug: str, days: int, companions_count: int = 1) -> str:
-    """국가/도시 이름이나 slug·일정·인원수로 숙소/교통/식비/액티비티 항목별 예상 예산을 추정한다.
+    """국가/도시 이름이나 slug·일정·인원수로 항공료/숙소/교통/식비/액티비티 항목별 예상 예산을 추정한다.
     실시간 가격이 아니라 평균값 기반 추정치임을 함께 안내한다.
     """
     slug = resolve_slug(slug) or slug
@@ -255,12 +256,16 @@ def estimate_budget(slug: str, days: int, companions_count: int = 1) -> str:
     if country is None:
         return f"'{slug}'는 등록된 국가 데이터가 없어 예산을 추정할 수 없습니다."
 
-    total = country["avg_daily_cost_krw"] * days * max(companions_count, 1)
+    companions_count = max(companions_count, 1)
+    flight_total = country["round_trip_flight_krw"] * companions_count
+    local_total = country["avg_daily_cost_krw"] * days * companions_count
+    total = flight_total + local_total
     breakdown = {
-        "숙소": round(total * 0.40),
-        "교통": round(total * 0.15),
-        "식비": round(total * 0.25),
-        "액티비티": round(total * 0.20),
+        "항공료(왕복)": flight_total,
+        "숙소": round(local_total * 0.40),
+        "교통(현지)": round(local_total * 0.15),
+        "식비": round(local_total * 0.25),
+        "액티비티": round(local_total * 0.20),
     }
     lines = [f"- {k}: 약 {_format_krw(v)}" for k, v in breakdown.items()]
     return (

@@ -130,6 +130,20 @@ def test_estimate_budget_breakdown_sums_to_total():
     assert "평균값 기반 추정치" in result
 
 
+def test_estimate_budget_includes_round_trip_flight_cost():
+    """항공료를 뺀 현지 체류비만으로 예산을 추정하면, 왕복 항공료가 실제로는 수십만원인
+    나라도 "인당 총비용 19만원" 같은 비현실적인 숫자가 나온다. 항공료(왕복)가 별도
+    항목으로 포함되고, 총액이 항공료+현지비용의 합과 일치하는지 확인하는 회귀 테스트다.
+    """
+    country = country_data.find_country("taiwan_taipei")
+    result = tools.estimate_budget.invoke({"slug": "taiwan_taipei", "days": 3, "companions_count": 1})
+    assert "항공료" in result
+    expected_flight = country["round_trip_flight_krw"]
+    expected_local = country["avg_daily_cost_krw"] * 3
+    assert tools._format_krw(expected_flight) in result
+    assert tools._format_krw(expected_flight + expected_local) in result
+
+
 def test_format_krw_avoids_comma_misreads():
     """금액을 만원 단위로 바꾼다. 라운드1에서 LLM이 "560,000원"을 "560만원"으로
     잘못 옮겨 적은 사고를 막기 위한 회귀 테스트다.
