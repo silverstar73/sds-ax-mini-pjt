@@ -50,11 +50,16 @@
 ## RAGAS 평가 결과
 이 프로젝트는 순수 RAG QA가 아니라 도구 호출형 에이전트라 `ragas` 패키지(RAGAS는 이 레포의 공용 `.venv`에 설치하면 다른 Day 실습과 의존성이 꼬일 위험이 있어 설치하지 않음)를 그대로 쓰는 대신, `evaluation/run_eval.py`의 LLM-judge가 RAGAS와 같은 4개 지표 정의(faithfulness/answer_relevancy/context_precision/context_recall)를 매 케이스마다 채점하도록 구현했습니다. contexts는 실행 중 호출된 도구(list_candidate_places, score_countries 등)의 결과를 그대로 사용합니다.
 
+**(구버전 기록, Day 9~10 · 20건 테스트셋 기준)**
 - 1차 (Day 9, 20건 중 2건만 실행됨 — 나머지는 Bedrock 쿼터 초과로 미실행): faithfulness 0.97 · answer_relevancy 0.97 · context_precision 1.00 · context_recall 1.00
-- 2차 (Day 10 개선 후, 20건 전체 실행): **faithfulness 0.98 · answer_relevancy 0.96 · context_precision 0.94 · context_recall 0.94**
+- 2차 (Day 10 개선 후, 20건 전체 실행): faithfulness 0.98 · answer_relevancy 0.96 · context_precision 0.94 · context_recall 0.94
+
+**현재 (SERVICE.md 기준 12건 테스트셋 재실행)** — `test_queries.csv`를 컬럼(id/category/input/expected_traits/forbidden/expected_tools/note) 기준 12건(positive 5·negative 2·edge 3·guardrail 2)으로 재구성한 뒤, 이미 회고 과정에서 수정이 끝난 현재 에이전트 코드로 round1·round2를 다시 실행했다. 새 코드베이스 기준이라 두 라운드 모두 통과율·지표가 거의 동일하게 나왔다(아래 "테스트 세트 통과율" 참고).
+- round1: faithfulness 0.98 · answer_relevancy 0.97 · context_precision 0.99 · context_recall 1.00
+- round2: faithfulness 0.97 · answer_relevancy 0.96 · context_precision 1.00 · context_recall 1.00
 
 ## 테스트 세트 통과율 (자체 평가)
-`test_queries.csv` 20건(당시 기준) · positive 8(40%) · negative 4(20%) · edge 5(25%) · guardrail 3(15%)
+**(구버전 기록)** `test_queries.csv` 20건(당시 기준) · positive 8(40%) · negative 4(20%) · edge 5(25%) · guardrail 3(15%)
 - 1차 (Day 9 종료): **13 / 20 통과 (65%)**
 - 2차 (Day 10 개선 후): **18 / 20 통과 (90%)** — SERVICE.md 목표치(90%) 달성
 - 개선폭: +5건 (아래 회고 참고)
@@ -63,7 +68,9 @@
 - 21번(효도여행): 첫 실행에 바로 PASS (F=1.00 AR=1.00 CP=1.00 CR=1.00) — 낮잠 대신 "무리한 이동 최소화, 고강도 액티비티 제외, 오후 휴식"으로 정확히 반영됨.
 - 22번(커플): 첫 실행은 FAIL — 자세한 내용은 아래 회고 참고. 원인 수정 후 재실행해 PASS (F=1.00 AR=1.00 CP=1.00 CR=1.00).
 
-**테스트셋 재구성**: 위 20건/22건 버전은 이후 `test_queries.csv`를 SERVICE.md 기준 컬럼(id/category/input/expected_traits/forbidden/expected_tools/note)에 맞춰 12건(positive 5·negative 2·edge 3·guardrail 2)으로 다시 간추리면서 케이스 구성이 바뀌었다. 위 1·2차 통과율(65%→90%)과 RAGAS 수치는 **그 이전 버전 파일 기준의 기록**이며, 케이스 ID·문구가 달라져 지금의 `test_queries.csv`와 1:1로 대응하지 않는다. LLM-judge(`run_eval.py`) round3는 아직 진행 전이고, 아래 `grade_queries.py` 규칙 기반 채점을 새 12건 세트에 대해 먼저 실행했다.
+**테스트셋 재구성 + 현재 통과율**: 위 20건/22건 버전은 이후 `test_queries.csv`를 SERVICE.md 기준 12건(positive 5·negative 2·edge 3·guardrail 2)으로 다시 간추리면서 케이스 구성이 바뀌었다. 위 1·2차 통과율(65%→90%)과 RAGAS 수치는 **그 이전 버전 파일 기준의 기록**이며, 케이스 ID·문구가 달라져 지금의 `test_queries.csv`와 1:1로 대응하지 않는다.
+
+새 12건 세트에 대해 LLM-judge(`run_eval.py`)로 round1·round2를 다시 실행한 결과는 **round1 12/12(100%) · round2 12/12(100%)**로 동일하게 나왔다 ([`round1_report.md`](evaluation/round1_report.md), [`round2_report.md`](evaluation/round2_report.md)). 이번에는 두 라운드 사이에 코드 변경이 없었기 때문인데(round1을 만드는 시점에 이미 `grade_queries.py` 채점 사이클에서 발견한 버그들이 전부 수정되어 있었다), 1차→2차 "개선폭"을 보여주는 실험이라기보다는 **같은 안정된 코드에 대해 재현성을 확인**한 것에 가깝다. 실제 버그 발견→수정 과정은 위 20건/22건 회고와, 아래 `grade_queries.py` 절의 예산 검증 버그 사례에 기록돼 있다.
 
 ## 규칙 기반 자동 채점 (`grade_queries.py`)
 `run_eval.py`의 LLM-judge와는 별도로, 사람 판단 없이도 재현 가능한 채점이 필요해 결정적 규칙 기반 채점 스크립트를 추가했다. 케이스마다 에이전트를 실제로 실행해:
