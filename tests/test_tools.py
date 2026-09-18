@@ -6,12 +6,21 @@
 import sys
 from pathlib import Path
 
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import api  # noqa: E402
 import country_data  # noqa: E402
 import guardrails  # noqa: E402
 import tools  # noqa: E402
+
+
+class _FakeRequest:
+    """AgentMiddleware가 받는 request 흉내: state["messages"]만 있으면 된다."""
+
+    def __init__(self, messages):
+        self.state = {"messages": messages}
 
 
 def test_resolve_slug_by_country_and_city_name():
@@ -195,3 +204,61 @@ def test_build_messages_carries_prior_turns_to_agent():
         {"role": "user", "content": "대만 타이베이로 갈게. 코스 짜줘."},
     ]
     assert api.build_messages([], "혼자 질문") == [{"role": "user", "content": "혼자 질문"}]
+
+
+def test_data_disclosure_forces_disclaimer_when_missing():
+    """실사용 중, 홍콩처럼 장소 데이터가 없는 나라인데도 최종 답변이 그 사실을 맨 앞에서
+    밝히지 않고 바로 (때로는 사실관계까지 틀린) 코스를 내놓는 사례가 있었다. 프롬프트
+    지시만으로는 LLM이 가끔 이를 생략해서, 코드 레벨로 강제하는 미들웨어를 추가했다.
+    """
+    request = _FakeRequest([
+        HumanMessage(content="홍콩 2박3일 코스 짜줘"),
+        ToolMessage(content="'hongkong'는 등록된 장소 데이터가 없습니다.", tool_call_id="1"),
+    ])
+    response = guardrails.ModelResponse(result=[AIMessage(content="## 홍콩 2박3일 코스\nDay1: 오차드 로드...")])
+    fixed = guardrails._ensure_no_data_disclosure(request, response)
+    fixed_answer = guardrails.get_text(fixed.result[-1])
+    assert fixed_answer.startswith("⚠️")
+    assert "코스" in fixed_answer
+
+
+def test_data_disclosure_leaves_answer_alone_when_already_disclosed():
+    """모델이 스스로 안내 문구를 맨 앞에 이미 넣었다면 중복으로 덧붙이지 않는다."""
+    request = _FakeRequest([
+        HumanMessage(content="오사카 코스 짜줘"),
+        ToolMessage(content="'japan_osaka'는 등록된 장소 데이터가 없습니다.", tool_call_id="1"),
+    ])
+    response = guardrails.ModelResponse(
+        result=[AIMessage(content="검증된 장소 데이터가 없습니다. 아래는 참고용 코스입니다...")]
+    )
+    fixed = guardrails._ensure_no_data_disclosure(request, response)
+    assert fixed is response
+
+
+def test_data_disclosure_ignores_unrelated_prior_turn():
+    """이전 턴에서 다른 나라가 데이터 없음 판정을 받았더라도, 이번 턴이 검증된 나라를
+    다루는 무관한 답변이면 안내 문구를 잘못 붙이지 않는다.
+    """
+    request = _FakeRequest([
+        HumanMessage(content="오사카 코스 짜줘"),
+        ToolMessage(content="'japan_osaka'는 등록된 장소 데이터가 없습니다.", tool_call_id="1"),
+        AIMessage(content="검증된 장소 데이터가 없습니다. 참고용 코스: ..."),
+        HumanMessage(content="다낭 코스도 짜줘"),
+        ToolMessage(content="- 미케 비치 (다낭 · 해변) · 평점 4.6", tool_call_id="2"),
+    ])
+    response = guardrails.ModelResponse(result=[AIMessage(content="다낭 3박4일 코스: Day1 미케 비치...")])
+    fixed = guardrails._ensure_no_data_disclosure(request, response)
+    assert fixed is response
+
+
+def test_data_disclosure_skips_intermediate_tool_call_steps():
+    """아직 도구를 더 부르는 중간 응답(최종 답변이 아님)은 건드리지 않는다."""
+    request = _FakeRequest([
+        HumanMessage(content="홍콩 코스 짜줘"),
+        ToolMessage(content="'hongkong'는 등록된 장소 데이터가 없습니다.", tool_call_id="1"),
+    ])
+    response = guardrails.ModelResponse(
+        result=[AIMessage(content="", tool_calls=[{"name": "get_climate_info", "args": {}, "id": "2"}])]
+    )
+    fixed = guardrails._ensure_no_data_disclosure(request, response)
+    assert fixed is response

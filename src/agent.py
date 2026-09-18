@@ -3,7 +3,7 @@
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 
-from guardrails import InjectionLogMiddleware, PiiGuardrailMiddleware
+from guardrails import DataDisclosureMiddleware, InjectionLogMiddleware, PiiGuardrailMiddleware
 from llm import build_resilient_model
 from retriever import search_country_notes
 from tools import (
@@ -68,7 +68,7 @@ agent = create_agent(
         search_country_notes,
     ],
     system_prompt=SYSTEM_PROMPT,
-    middleware=[PiiGuardrailMiddleware(), InjectionLogMiddleware()],
+    middleware=[PiiGuardrailMiddleware(), InjectionLogMiddleware(), DataDisclosureMiddleware()],
 )
 
 if __name__ == "__main__":
