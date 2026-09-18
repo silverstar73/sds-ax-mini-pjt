@@ -20,14 +20,31 @@ api.add_middleware(
 )
 
 
+class HistoryTurn(BaseModel):
+    role: str
+    content: str
+
+
 class Query(BaseModel):
     question: str
+    history: list[HistoryTurn] = []
+
+
+def build_messages(history: list[HistoryTurn], question: str) -> list[dict]:
+    """history(이전 턴)에 새 question을 이어붙여 에이전트에 넘길 메시지 목록을 만든다.
+
+    question만 담아 매번 새 대화로 취급하면, 이전에 알려준 예산·기간·동반인 같은 정보를
+    에이전트가 기억하지 못해 같은 질문을 계속 반복하게 된다.
+    """
+    return [{"role": h.role, "content": h.content} for h in history] + [
+        {"role": "user", "content": question}
+    ]
 
 
 @api.post("/query")
 async def query(q: Query):
-    """question을 받아 에이전트를 실행하고, 답변·도구 결과(contexts)·도구 호출 이력(trace)을 돌려준다."""
-    result = await agent.ainvoke({"messages": [{"role": "user", "content": q.question}]})
+    """question과 history를 받아 에이전트를 실행하고, 답변·도구 결과(contexts)·도구 호출 이력(trace)을 돌려준다."""
+    result = await agent.ainvoke({"messages": build_messages(q.history, q.question)})
     messages = result["messages"]
 
     answer = get_text(messages[-1])

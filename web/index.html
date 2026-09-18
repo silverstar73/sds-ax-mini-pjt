@@ -221,6 +221,11 @@
   }
   checkHealth();
 
+  // 이전 턴들을 여기 쌓아뒀다가 매 요청마다 함께 보낸다. 이게 없으면 서버가 매번
+  // question 하나만 받아 새 대화로 취급해서, 이미 알려준 예산·기간 같은 정보를
+  // 에이전트가 기억하지 못하고 같은 질문을 반복하게 된다.
+  let history = [];
+
   async function sendQuestion(question) {
     addMessage("user", question);
     input.value = "";
@@ -232,13 +237,15 @@
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, history }),
       });
       if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
       const data = await res.json();
       pending.remove();
       addMessage("agent", data.answer || "(답변이 비어 있습니다)");
       addTrace(data.trace);
+      history.push({ role: "user", content: question });
+      history.push({ role: "assistant", content: data.answer || "" });
       statusEl.className = "ok";
       statusText.textContent = "API 서버 연결됨 (localhost:8000)";
     } catch (err) {

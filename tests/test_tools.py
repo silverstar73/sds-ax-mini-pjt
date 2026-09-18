@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+import api  # noqa: E402
 import country_data  # noqa: E402
 import guardrails  # noqa: E402
 import tools  # noqa: E402
@@ -162,3 +163,21 @@ def test_injection_guardrail_flags_suspected_patterns_without_blocking():
     assert suspected is True
     suspected, _ = guardrails.check_injection("연차 규정 알려줘")
     assert suspected is False
+
+
+def test_build_messages_carries_prior_turns_to_agent():
+    """웹 채팅에서 매 요청마다 history 없이 question만 보내면, 에이전트가 이전 턴에서
+    받은 예산·기간·동반인 정보를 기억하지 못해 같은 질문을 계속 반복하는 버그가 있었다.
+    history를 새 question 앞에 그대로 이어붙이는지 확인하는 회귀 테스트다.
+    """
+    history = [
+        api.HistoryTurn(role="user", content="예산 100만원, 친구 셋이서 11월에 갈만한 나라 추천해줘"),
+        api.HistoryTurn(role="assistant", content="대만 타이베이를 추천드립니다."),
+    ]
+    messages = api.build_messages(history, "대만 타이베이로 갈게. 코스 짜줘.")
+    assert messages == [
+        {"role": "user", "content": "예산 100만원, 친구 셋이서 11월에 갈만한 나라 추천해줘"},
+        {"role": "assistant", "content": "대만 타이베이를 추천드립니다."},
+        {"role": "user", "content": "대만 타이베이로 갈게. 코스 짜줘."},
+    ]
+    assert api.build_messages([], "혼자 질문") == [{"role": "user", "content": "혼자 질문"}]
