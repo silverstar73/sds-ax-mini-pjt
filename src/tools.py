@@ -53,6 +53,9 @@ def score_countries(
     month은 1~12 여행 예정 월(모르면 0), preferred_country는 사용자가 직접 지정한 국가명(없으면 빈 문자열)이다.
     예산 조건에 맞는 국가가 하나도 없으면 그 사실만 안내하고 지어내지 않는다.
     """
+    if budget_krw <= 0:
+        return f"예산 {budget_krw:,}원은 유효하지 않은 값입니다. 올바른 예산(0보다 큰 금액)을 다시 알려주세요."
+
     requested_purposes = _purpose_list(purpose)
     has_child = any(k in companions for k in ["아동", "미취학", "영유아", "아기", "유아"])
     has_senior = any(k in companions for k in ["부모님", "부모", "어르신", "시니어", "효도", "노부모"])

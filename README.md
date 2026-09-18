@@ -43,8 +43,9 @@
 2. `pip install -r requirements.txt`
 3. CLI 데모: `./run.sh` (내부적으로 `cd src && python agent.py`)
 4. API 서버: `./run.sh api` → `POST http://localhost:8000/query` `{"question": "..."}` → `{answer, contexts, trace}`
-5. 평가: `cd evaluation && python run_eval.py round1` (또는 `round2`) → `round*_report.md` 갱신
-6. 단위 테스트(Bedrock 호출 없음, 무료·즉시): `pytest tests/`
+5. 평가(LLM-judge, RAGAS 지표): `cd evaluation && python run_eval.py round1` (또는 `round2`) → `round*_report.md` 갱신
+6. 평가(규칙 기반 자동 채점): `cd evaluation && python grade_queries.py` → 케이스별로 에이전트를 실제 실행해 도구 호출·forbidden 문구를 결정적으로 채점하고 `grading_report.md` 생성
+7. 단위 테스트(Bedrock 호출 없음, 무료·즉시): `pytest tests/`
 
 ## RAGAS 평가 결과
 이 프로젝트는 순수 RAG QA가 아니라 도구 호출형 에이전트라 `ragas` 패키지(RAGAS는 이 레포의 공용 `.venv`에 설치하면 다른 Day 실습과 의존성이 꼬일 위험이 있어 설치하지 않음)를 그대로 쓰는 대신, `evaluation/run_eval.py`의 LLM-judge가 RAGAS와 같은 4개 지표 정의(faithfulness/answer_relevancy/context_precision/context_recall)를 매 케이스마다 채점하도록 구현했습니다. contexts는 실행 중 호출된 도구(list_candidate_places, score_countries 등)의 결과를 그대로 사용합니다.
@@ -61,6 +62,20 @@
 **추가 검증(round2 이후)**: "가족+아동" 위주로만 테스트돼 있어 커플·효도여행 등 다른 동반인 유형에도 실제로 차별화된 동작(안전도 가중치, 저강도 일정 등)이 적용되는지가 빠져 있었다. `score_countries`에 효도여행(부모님/어르신) 감지·가중치를 추가하고, 테스트셋에 21번(효도여행)·22번(커플) 케이스를 새로 추가해 22건으로 확장했다 (positive 10·negative 4·edge 5·guardrail 3, 45/18/23/14%).
 - 21번(효도여행): 첫 실행에 바로 PASS (F=1.00 AR=1.00 CP=1.00 CR=1.00) — 낮잠 대신 "무리한 이동 최소화, 고강도 액티비티 제외, 오후 휴식"으로 정확히 반영됨.
 - 22번(커플): 첫 실행은 FAIL — 자세한 내용은 아래 회고 참고. 원인 수정 후 재실행해 PASS (F=1.00 AR=1.00 CP=1.00 CR=1.00).
+
+**테스트셋 재구성**: 위 20건/22건 버전은 이후 `test_queries.csv`를 SERVICE.md 기준 컬럼(id/category/input/expected_traits/forbidden/expected_tools/note)에 맞춰 12건(positive 5·negative 2·edge 3·guardrail 2)으로 다시 간추리면서 케이스 구성이 바뀌었다. 위 1·2차 통과율(65%→90%)과 RAGAS 수치는 **그 이전 버전 파일 기준의 기록**이며, 케이스 ID·문구가 달라져 지금의 `test_queries.csv`와 1:1로 대응하지 않는다. LLM-judge(`run_eval.py`) round3는 아직 진행 전이고, 아래 `grade_queries.py` 규칙 기반 채점을 새 12건 세트에 대해 먼저 실행했다.
+
+## 규칙 기반 자동 채점 (`grade_queries.py`)
+`run_eval.py`의 LLM-judge와는 별도로, 사람 판단 없이도 재현 가능한 채점이 필요해 결정적 규칙 기반 채점 스크립트를 추가했다. 케이스마다 에이전트를 실제로 실행해:
+- `expected_tools`가 있으면 실행 트레이스(`AIMessage.tool_calls`)에 해당 도구가 실제로 호출됐는지 확인하고,
+- `forbidden` 문구(세미콜론 구분)가 최종 답변에 그대로 등장하면 그 자리에서 실패로 처리하며,
+- `expected_traits`는 자동 채점하지 않고 답변 전문과 나란히 `grading_report.md`에 남겨 사람이 확인하도록 한다.
+
+**결과: 12 / 12 통과 (100%)** — positive 5/5, negative 2/2, edge 3/3, guardrail 2/2. 상세는 [`evaluation/grading_report.md`](evaluation/grading_report.md) 참고.
+
+이 100%는 처음부터 나온 값이 아니다. 최초 실행은 8/12(67%)였고, 실패 4건을 분석해 두 가지 다른 성격의 문제를 구분했다:
+- **테스트 설계가 과도하게 프리스크립티브했던 3건(5·6·10번)**: 에이전트의 실제 답변 내용은 옳았지만(예: 아틀란티스처럼 명백히 가상 국가는 도구 호출 없이 바로 거절, 장소 하나만 물었으면 `verify_place`만 호출) `expected_tools`가 특정 도구 호출 "경로"까지 못박아 놓아 실패로 잡혔다. 결과가 맞다면 경로는 여러 개일 수 있다는 판단하에 `expected_tools`를 실제로 정당한 동작에 맞게 완화했다.
+- **진짜 버그였던 1건(9번, 예산 -50만원)**: 에이전트가 음수 예산을 지적하지 않고 다른 조건만 되묻는 실제 결함이었다. `score_countries`에 `budget_krw <= 0` 방어 로직과 회귀 단위 테스트를 추가하고, 시스템 프롬프트에도 "잘못된 예산은 되묻기 전에 먼저 지적" 규칙을 넣어 수정했다. 수정 후에도 에이전트는 도구를 부르지 않고 스스로 판단해 거절하므로, 9번의 `expected_tools`도 결과 기준으로 완화했다.
 
 ## 트라이앤에러 회고
 **시도했지만 실패한 접근**

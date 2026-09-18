@@ -54,6 +54,27 @@ def test_score_countries_no_match_message_when_over_budget():
     assert "찾지 못했습니다" in result
 
 
+def test_score_countries_rejects_non_positive_budget():
+    """예산이 0 이하면 국가 목록을 뒤지지 않고 예산 값 자체가 잘못됐다고 바로 안내한다.
+    grade_queries.py로 실제 채점해 보니 에이전트가 음수 예산을 지적하지 않고 다른 정보만
+    되묻은 사례를 발견해 추가한 회귀 테스트다.
+    """
+    result = tools.score_countries.invoke({
+        "budget_krw": -500_000,
+        "purpose": "휴양",
+        "companions": "혼자",
+        "days": 4,
+    })
+    assert "유효하지 않은 값" in result
+    result_zero = tools.score_countries.invoke({
+        "budget_krw": 0,
+        "purpose": "휴양",
+        "companions": "혼자",
+        "days": 4,
+    })
+    assert "유효하지 않은 값" in result_zero
+
+
 def test_get_climate_info_dry_vs_rainy():
     """같은 국가라도 월에 따라 건기/우기 판정이 올바르게 갈린다."""
     dry = tools.get_climate_info.invoke({"slug": "vietnam_danang", "month": 3})
