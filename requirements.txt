@@ -15,5 +15,8 @@ requests
 fastapi
 uvicorn
 
+# Observability (LangSmith 트레이싱, .env에 LANGCHAIN_TRACING_V2=true 등 설정 시 자동 기록)
+langsmith
+
 # 단위 테스트 (tests/)
 pytest

@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from agent import agent
 from guardrails import get_text
+from intake import aparse_trip_intent
 
 api = FastAPI()
 
@@ -43,7 +44,10 @@ def build_messages(history: list[HistoryTurn], question: str) -> list[dict]:
 
 @api.post("/query")
 async def query(q: Query):
-    """question과 history를 받아 에이전트를 실행하고, 답변·도구 결과(contexts)·도구 호출 이력(trace)을 돌려준다."""
+    """question과 history를 받아 에이전트를 실행하고, 답변·도구 결과(contexts)·도구 호출 이력(trace)·
+    구조화 파싱 결과(intent)를 돌려준다.
+    """
+    intent = await aparse_trip_intent(q.question)
     result = await agent.ainvoke({"messages": build_messages(q.history, q.question)})
     messages = result["messages"]
 
@@ -58,7 +62,7 @@ async def query(q: Query):
 
     # media_type에 charset=utf-8을 명시한다. 없으면 일부 클라이언트가 한글을 잘못 해석한다.
     return JSONResponse(
-        content={"answer": answer, "contexts": contexts, "trace": trace},
+        content={"answer": answer, "contexts": contexts, "trace": trace, "intent": intent.model_dump()},
         media_type="application/json; charset=utf-8",
     )
 

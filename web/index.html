@@ -209,6 +209,23 @@
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
+  function addIntent(intent) {
+    if (!intent) return;
+    const parts = [];
+    if (intent.budget_krw) parts.push("예산 " + intent.budget_krw.toLocaleString() + "원");
+    if (intent.days) parts.push(intent.days + "일");
+    if (intent.companions) parts.push(intent.companions);
+    if (intent.purpose) parts.push(intent.purpose);
+    if (intent.month) parts.push(intent.month + "월");
+    if (intent.preferred_country) parts.push(intent.preferred_country);
+    if (parts.length === 0) return;
+    const div = document.createElement("div");
+    div.className = "trace";
+    div.textContent = "🧩 요청 파싱 결과: " + parts.join(" · ");
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
   async function checkHealth() {
     try {
       await fetch(API_URL, { method: "OPTIONS" });
@@ -243,6 +260,7 @@
       const data = await res.json();
       pending.remove();
       addMessage("agent", data.answer || "(답변이 비어 있습니다)");
+      addIntent(data.intent);
       addTrace(data.trace);
       history.push({ role: "user", content: question });
       history.push({ role: "assistant", content: data.answer || "" });

@@ -10,14 +10,25 @@
 - **P1 (시간 허락 시)**: 동선 최적화(`optimize_route`) — 이미 구현·테스트는 해뒀지만, 장소 검증·코스 생성이 부실해지면서까지 우선하지 않는다
 - **보조**: 구글맵 연동 표시, 계절 적합도 안내, 예산 시뮬레이션
 
-## 활용한 패턴 (Day 1~7)
-- Day 1: 구조화된 출력 (Pydantic + `with_structured_output`) — `evaluation/run_eval.py`의 LLM-judge가 `JudgeResult` 스키마로 통과 여부를 판정
-- Day 2: RAG — `src/retriever.py`에서 국가별 안전/비자/여행 팁 노트를 Bedrock 임베딩 + Chroma로 색인하고 `search_country_notes` 도구로 의미 검색
-- Day 4: Tool use — `src/tools.py`에 `@tool`로 국가 스코어링·계절 정보·장소 후보 조회·장소 검증·동선 최적화·예산 추정 도구를 정의 (MCP는 미사용, 구글 플레이스는 REST 직접 호출/로컬 큐레이션 데이터로 대체)
-- Day 5: 가드레일 — `src/guardrails.py`의 `AgentMiddleware`로 개인정보 패턴은 즉시 차단(`PiiGuardrailMiddleware`), 프롬프트 인젝션 의심은 SERVICE.md 정책대로 차단 없이 감사 로그만 남김(`InjectionLogMiddleware`)
-- Day 5/6: `langchain.agents.create_agent` 기반 단일 ReAct 에이전트 — 국가추천·코스생성·장소검증·예산산정을 별도 그래프 노드로 나누지 않고, 한 에이전트가 상황에 맞는 도구를 골라 호출
-- Day 7: LLM-as-judge 평가 — `evaluation/run_eval.py`가 `evaluation/test_queries.csv`를 실행해 `expected_traits`/`forbidden` 기준으로 통과율을 채점
-- (MVP 제외) Day 3 커스텀 StateGraph, Day 6 멀티에이전트 supervisor, Day 7 Plan-and-Execute — 현재 규모에서는 단일 ReAct 에이전트로 충분하다고 판단해 v2로 미룸
+## 빌드 체크리스트 (12개 패턴) 반영 현황
+과제 채점 기준의 12개 패턴 중 필수 4개(1·3·11·12)를 포함해 아래 항목을 반영했다. 표에 없는 항목(MCP·HITL·Multi-Agent Supervisor·Plan-Execute·장기 메모리)은 이 서비스 규모에서 굳이 넣을 필요가 없다고 판단해 의도적으로 제외했다(자세한 사유는 각 항목 참고).
+
+| # | 패턴 | 상태 | 어디에 |
+|---|---|---|---|
+| 1 | LCEL + 구조화 출력 (필수) | ✅ | `src/intake.py`의 `parse_trip_intent`/`aparse_trip_intent`가 `with_structured_output(TripIntent)`로 사용자 자유 텍스트를 예산·기간·동반인·목적·시기·목적지로 구조화하고, `src/api.py`가 이를 `/query` 응답의 `intent` 필드에 그대로 실어 반환한다. (참고: `evaluation/run_eval.py`의 LLM-judge도 `JudgeResult`로 같은 패턴을 쓰지만, 그건 평가 스크립트일 뿐 서비스 자체는 아니라서 이번에 core에도 넣었다.) |
+| 2 | ReAct (도구 자율 선택) | ✅ | `src/agent.py`의 `create_agent` — 시스템 프롬프트 기준으로 매 턴 어떤 도구를 부를지 모델이 자율 판단 |
+| 3 | RAG + 쿼리 확장 (필수) | ✅ | `src/retriever.py`의 `_expand_query`가 원래 질문과 같은 의도의 검색어 2개를 LLM으로 더 만들어(`_expand_chain.with_structured_output`) 함께 검색하고, slug 기준으로 중복 제거해 상위 k개를 돌려준다. 하이브리드 검색·리랭킹까지는 넣지 않았다(11개 문서뿐인 코퍼스 규모상 비용 대비 효과가 낮다고 판단) |
+| 4 | 도구 다중 | ✅ | `src/tools.py` 6개(DB 조회형 4개, 계산기형 2개) + `src/retriever.py`의 `search_country_notes` = 총 7개, 전부 단일 에이전트에 바인딩. 한 질의에 2~4개를 자율 결합하는 경우가 실제 트레이스에서 흔히 나온다 |
+| 5 | MCP 서버 연동 | 제외 | 구글 플레이스는 REST 직접 호출/로컬 큐레이션으로 대체. 사내 시스템처럼 MCP로 노출할 만한 별도 서버가 이 프로젝트엔 없다 |
+| 6 | 가드레일 (PII·인젝션) | ✅ | `src/guardrails.py` — PII는 `PiiGuardrailMiddleware`가 모델 호출 전에 즉시 차단(입력 측), 인젝션은 `InjectionLogMiddleware`가 SERVICE.md 정책대로 차단 없이 감사 로그만 남김, `DataDisclosureMiddleware`가 출력 측에서 데이터 고지 문구 누락을 보정 |
+| 7 | HITL (위험 작업 승인) | 제외 | 이 서비스엔 실제 결제·예약처럼 되돌리기 어려운 위험 작업이 없어 승인 게이트가 필요한 지점 자체가 없다 |
+| 8 | 미들웨어 (요약·마스킹·재시도) | ✅ | 미들웨어 3종(위 6번) + `src/llm.py`의 `ResilientChatBedrock`이 쓰로틀링 시 모델을 순서대로 전환하는 재시도 로직(미들웨어 계층은 아니고 커스텀 `BaseChatModel` 래퍼) |
+| 9 | Multi-Agent Supervisor | 제외 | 현재 규모(단일 도메인, 7개 도구)에서는 역할을 나눌 서브 에이전트가 필요한 복잡도가 아니라고 판단해 단일 ReAct 에이전트로 충분하다고 봤다 |
+| 10 | Plan-Execute · 장기 메모리 | 제외 | 코스 생성이 "계획 후 실행"을 분리할 만큼 다단계가 아니고, `api.py`의 `history`는 클라이언트가 매 요청마다 실어 보내는 요청 단위 단기 메모리라 서버 측 영속 저장(LangGraph Store 등)까지는 필요하지 않다고 판단 |
+| 11 | Observability · Trace (필수) | ✅ | `.env`에 `LANGCHAIN_TRACING_V2=true` + `LANGCHAIN_API_KEY`(smith.langchain.com 무료 발급)를 채우면 LangChain이 모든 실행을 LangSmith에 자동 기록한다(코드 변경 없음, `requirements.txt`에 `langsmith` 명시). `/query` 응답의 `trace` 필드는 별개로, 요청 하나 안에서 호출된 도구만 보여주는 자체 제작 리스트다 |
+| 12 | 평가 (RAGAS · LLM-as-Judge) (필수) | ✅ | `evaluation/run_eval.py`(LLM-judge, RAGAS 스타일 4지표) + `evaluation/grade_queries.py`(규칙 기반 도구 호출/forbidden 채점) |
+
+필수 4개(1·3·11·12) 전부 충족, 권장 6개 이상도 2·4·6·8을 더해 총 8개로 충족.
 
 ## 아키텍처
 ```
@@ -39,10 +50,10 @@
 모델 호출 자체도 `src/llm.py`의 `ResilientChatBedrock`을 통해, Sonnet 4.5/4.6 → Haiku → Nova 순으로 쓰로틀링 시 자동 전환되도록 감싸져 있다 (agent/judge 공용).
 
 ## 실행 방법
-1. 이 프로젝트 루트에 `.env` 파일을 만들고 AWS 자격 증명을 넣어야 합니다 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`) — Bedrock 모델·임베딩 호출용. `.gitignore`에 이미 포함돼 있어 커밋되지 않습니다. `GOOGLE_MAPS_API_KEY`는 선택 사항(없으면 로컬 큐레이션 장소 데이터로 검증).
+1. 이 프로젝트 루트에 `.env` 파일을 만들고 AWS 자격 증명을 넣어야 합니다 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`) — Bedrock 모델·임베딩 호출용. `.gitignore`에 이미 포함돼 있어 커밋되지 않습니다. `GOOGLE_MAPS_API_KEY`는 선택 사항(없으면 로컬 큐레이션 장소 데이터로 검증). `LANGCHAIN_TRACING_V2=true` + `LANGCHAIN_API_KEY`(smith.langchain.com에서 무료 발급) + `LANGCHAIN_PROJECT`를 채우면 모든 에이전트 실행이 LangSmith에 자동으로 트레이싱됩니다 — 비워두면 트레이싱 없이 평소대로 동작합니다(코드 변경 없이 LangChain이 환경변수만 보고 자동으로 켜고 끕니다).
 2. `pip install -r requirements.txt`
 3. CLI 데모: `./run.sh` (내부적으로 `cd src && python agent.py`)
-4. API 서버: `./run.sh api` → `POST http://localhost:8000/query` `{"question": "..."}` → `{answer, contexts, trace}`
+4. API 서버: `./run.sh api` → `POST http://localhost:8000/query` `{"question": "..."}` → `{answer, contexts, trace}`(제출 규약 필수 3키) `+ intent`(추가 필드, 구조화 파싱 결과 — 필수 3키는 그대로 유지되고 그 위에 덧붙인 것)
 5. 웹 채팅 데모: 4번으로 API 서버를 켠 상태에서 `web/index.html`을 브라우저로 직접 열면(더블클릭 또는 `file://` 경로) 채팅 UI로 에이전트와 바로 대화할 수 있습니다. 별도 빌드·서버 없이 정적 HTML 하나로 동작하며, API 서버가 꺼져 있으면 상단 상태 표시가 "연결할 수 없음"으로 바뀝니다.
 6. 평가(LLM-judge, RAGAS 지표): `cd evaluation && python run_eval.py round1` (또는 `round2`) → `round*_report.md` 갱신
 7. 평가(규칙 기반 자동 채점): `cd evaluation && python grade_queries.py` → 케이스별로 에이전트를 실제 실행해 도구 호출·forbidden 문구를 결정적으로 채점하고 `grading_report.md` 생성
@@ -116,9 +127,11 @@
 - `src/agent.py` — 메인 에이전트 (`create_agent` + 시스템 프롬프트 + 가드레일 미들웨어 + 도구 목록)
 - `src/llm.py` — Bedrock 모델 쓰로틀링 시 다음 모델로 자동 전환하는 `ResilientChatBedrock`
 - `src/tools.py` — 도메인 도구 (P0: 장소 후보/검증, 코스 생성 보조 / P0 지원: 국가 필터링 / P1: 동선 최적화 / 보조: 계절 정보, 예산 추정)
-- `src/retriever.py` — RAG 파이프라인 (Bedrock 임베딩 + Chroma, `search_country_notes` 도구)
-- `src/guardrails.py` — 입력 가드레일 미들웨어 (개인정보 차단, 프롬프트 인젝션 감사 로그)
+- `src/retriever.py` — RAG 파이프라인 (Bedrock 임베딩 + Chroma, `search_country_notes` 도구, LLM 쿼리 확장 `_expand_query`)
+- `src/intake.py` — 자유 텍스트 요청을 `TripIntent`(Pydantic)로 구조화하는 LCEL 체인 (`with_structured_output`)
+- `src/guardrails.py` — 가드레일·정책 미들웨어 (개인정보 즉시 차단, 프롬프트 인젝션 감사 로그, 장소 데이터 없음 안내 강제)
 - `src/country_data.py` — `data/countries.json`, `data/places/*.json` 로더
-- `src/api.py` — `POST /query` API (`{answer, contexts, trace}`)
+- `src/api.py` — `POST /query` API (`{answer, contexts, trace, intent}`)
 - `evaluation/run_eval.py` — `test_queries.csv` 실행 + LLM-judge 채점 스크립트
-- `tests/test_tools.py` — 도구·가드레일 결정적 로직 단위 테스트 (Bedrock 미호출, `pytest tests/`)
+- `evaluation/grade_queries.py` — `test_queries.csv` 실행 + 규칙 기반(도구 호출·forbidden) 채점 스크립트
+- `tests/test_tools.py` — 도구·가드레일·미들웨어 결정적 로직 단위 테스트 (Bedrock 미호출, `pytest tests/`)

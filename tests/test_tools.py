@@ -13,6 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import api  # noqa: E402
 import country_data  # noqa: E402
 import guardrails  # noqa: E402
+import intake  # noqa: E402
+import retriever  # noqa: E402
 import tools  # noqa: E402
 
 
@@ -249,6 +251,53 @@ def test_data_disclosure_ignores_unrelated_prior_turn():
     response = guardrails.ModelResponse(result=[AIMessage(content="다낭 3박4일 코스: Day1 미케 비치...")])
     fixed = guardrails._ensure_no_data_disclosure(request, response)
     assert fixed is response
+
+
+def test_trip_intent_defaults_are_all_empty():
+    """언급되지 않은 항목은 숫자 0/빈 문자열로 남아, 지어낸 값이 섞이지 않는다."""
+    intent = intake.TripIntent()
+    assert intent.budget_krw == 0
+    assert intent.days == 0
+    assert intent.companions == ""
+    assert intent.purpose == ""
+    assert intent.month == 0
+    assert intent.preferred_country == ""
+
+
+def test_parse_trip_intent_falls_back_to_defaults_on_error(monkeypatch):
+    """구조화 출력 호출이 실패해도(쓰로틀링 등) 예외를 올리지 않고 빈 TripIntent로 안전하게 대체한다."""
+    class _BoomChain:
+        def invoke(self, *args, **kwargs):
+            raise RuntimeError("모델 호출 실패 시뮬레이션")
+
+    monkeypatch.setattr(intake, "_intake_chain", _BoomChain())
+    result = intake.parse_trip_intent("아무 질문")
+    assert result == intake.TripIntent()
+
+
+def test_expand_query_falls_back_to_original_on_error(monkeypatch):
+    """쿼리 확장 호출이 실패해도(쓰로틀링 등) 예외를 올리지 않고 원래 질문만으로 검색을 이어간다."""
+    class _BoomChain:
+        def invoke(self, *args, **kwargs):
+            raise RuntimeError("모델 호출 실패 시뮬레이션")
+
+    monkeypatch.setattr(retriever, "_expand_chain", _BoomChain())
+    assert retriever._expand_query("치안이 안전한 나라") == ["치안이 안전한 나라"]
+
+
+def test_expand_query_prepends_original_to_expanded_list(monkeypatch):
+    """확장에 성공하면 원래 질문이 항상 맨 앞에 오고, 그 뒤에 확장된 검색어들이 붙는다."""
+    class _FakeExpanded:
+        queries = ["안전한 여행지", "치안 좋은 나라"]
+
+    class _FakeChain:
+        def invoke(self, *args, **kwargs):
+            return _FakeExpanded()
+
+    monkeypatch.setattr(retriever, "_expand_chain", _FakeChain())
+    assert retriever._expand_query("치안이 안전한 나라") == [
+        "치안이 안전한 나라", "안전한 여행지", "치안 좋은 나라",
+    ]
 
 
 def test_data_disclosure_skips_intermediate_tool_call_steps():
