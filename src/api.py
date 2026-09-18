@@ -1,6 +1,7 @@
 """해외여행플래너 API: POST /query로 question을 받아 answer/contexts/trace를 돌려준다."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from langchain_core.messages import AIMessage, ToolMessage
 from pydantic import BaseModel
@@ -9,6 +10,14 @@ from agent import agent
 from guardrails import get_text
 
 api = FastAPI()
+
+# web/index.html을 파일로 직접 열어(file:// 오리진) 로컬 API를 호출하는 데모용 설정이라 전체 허용한다.
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
 
 
 class Query(BaseModel):

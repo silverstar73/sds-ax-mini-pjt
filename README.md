@@ -43,9 +43,10 @@
 2. `pip install -r requirements.txt`
 3. CLI 데모: `./run.sh` (내부적으로 `cd src && python agent.py`)
 4. API 서버: `./run.sh api` → `POST http://localhost:8000/query` `{"question": "..."}` → `{answer, contexts, trace}`
-5. 평가(LLM-judge, RAGAS 지표): `cd evaluation && python run_eval.py round1` (또는 `round2`) → `round*_report.md` 갱신
-6. 평가(규칙 기반 자동 채점): `cd evaluation && python grade_queries.py` → 케이스별로 에이전트를 실제 실행해 도구 호출·forbidden 문구를 결정적으로 채점하고 `grading_report.md` 생성
-7. 단위 테스트(Bedrock 호출 없음, 무료·즉시): `pytest tests/`
+5. 웹 채팅 데모: 4번으로 API 서버를 켠 상태에서 `web/index.html`을 브라우저로 직접 열면(더블클릭 또는 `file://` 경로) 채팅 UI로 에이전트와 바로 대화할 수 있습니다. 별도 빌드·서버 없이 정적 HTML 하나로 동작하며, API 서버가 꺼져 있으면 상단 상태 표시가 "연결할 수 없음"으로 바뀝니다.
+6. 평가(LLM-judge, RAGAS 지표): `cd evaluation && python run_eval.py round1` (또는 `round2`) → `round*_report.md` 갱신
+7. 평가(규칙 기반 자동 채점): `cd evaluation && python grade_queries.py` → 케이스별로 에이전트를 실제 실행해 도구 호출·forbidden 문구를 결정적으로 채점하고 `grading_report.md` 생성
+8. 단위 테스트(Bedrock 호출 없음, 무료·즉시): `pytest tests/`
 
 ## RAGAS 평가 결과
 이 프로젝트는 순수 RAG QA가 아니라 도구 호출형 에이전트라 `ragas` 패키지(RAGAS는 이 레포의 공용 `.venv`에 설치하면 다른 Day 실습과 의존성이 꼬일 위험이 있어 설치하지 않음)를 그대로 쓰는 대신, `evaluation/run_eval.py`의 LLM-judge가 RAGAS와 같은 4개 지표 정의(faithfulness/answer_relevancy/context_precision/context_recall)를 매 케이스마다 채점하도록 구현했습니다. contexts는 실행 중 호출된 도구(list_candidate_places, score_countries 등)의 결과를 그대로 사용합니다.

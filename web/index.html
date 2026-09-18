@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>해외여행플래너</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --border: #e3e6ee;
+    --text: #1f2430;
+    --muted: #737a8c;
+    --accent: #2f6fed;
+    --accent-fg: #ffffff;
+    --bubble-user: #2f6fed;
+    --bubble-agent: #f0f2f8;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  .app {
+    max-width: 760px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  #api-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-top: 8px;
+    color: var(--muted);
+  }
+  #api-status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c9ccd6;
+  }
+  #api-status.ok .dot { background: #2fb85c; }
+  #api-status.down .dot { background: #e0503c; }
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .msg {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    line-height: 1.5;
+    font-size: 14px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--bubble-user);
+    color: var(--accent-fg);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.agent {
+    align-self: flex-start;
+    background: var(--bubble-agent);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.agent.pending { color: var(--muted); font-style: italic; }
+  .msg table { border-collapse: collapse; margin: 8px 0; width: 100%; }
+  .msg th, .msg td { border: 1px solid var(--border); padding: 6px 8px; font-size: 13px; text-align: left; }
+  .msg code { background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 4px; }
+  .msg a { color: var(--accent); }
+  .msg p { margin: 0 0 8px; }
+  .msg p:last-child { margin-bottom: 0; }
+  .trace {
+    align-self: flex-start;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+  form {
+    display: flex;
+    gap: 8px;
+    padding: 14px 20px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+  textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    height: 44px;
+    max-height: 140px;
+  }
+  textarea:focus { outline: 2px solid var(--accent); }
+  button {
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { background: #b7c4e8; cursor: not-allowed; }
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 20px 12px;
+  }
+  .examples button {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-weight: 400;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>✈️ 해외여행플래너</h1>
+    <p>로컬에서 실행 중인 에이전트(POST /query)와 직접 대화합니다.</p>
+    <div id="api-status"><span class="dot"></span><span id="api-status-text">API 서버 확인 중...</span></div>
+  </header>
+
+  <div class="examples" id="examples">
+    <button type="button" data-q="예산 300만원, 성인 2 아동 1(6세 여아), 3월에 휴양 목적으로 갈만한 나라 추천해줘">가족 여행 국가 추천</button>
+    <button type="button" data-q="베트남 다낭으로 이미 정했어. 3박4일 코스 짜줘.">다낭 3박4일 코스</button>
+    <button type="button" data-q="여자친구랑 태국 방콕으로 2박3일 커플 여행 코스 짜줘">방콕 커플 여행</button>
+    <button type="button" data-q="부모님 모시고 다낭으로 3박4일 효도여행 가는데 무리 없는 일정으로 짜줘">다낭 효도여행</button>
+  </div>
+
+  <div id="messages"></div>
+
+  <form id="chat-form">
+    <textarea id="input" placeholder="예: 태국 방콕 2박3일 커플 여행 코스 짜줘" required></textarea>
+    <button type="submit" id="send-btn">전송</button>
+  </form>
+</div>
+
+<script>
+  const API_URL = "http://localhost:8000/query";
+  const messagesEl = document.getElementById("messages");
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send-btn");
+  const statusEl = document.getElementById("api-status");
+  const statusText = document.getElementById("api-status-text");
+
+  marked.setOptions({ breaks: true });
+
+  function addMessage(role, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    if (role === "agent") {
+      div.innerHTML = marked.parse(text);
+    } else {
+      div.textContent = text;
+    }
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
+
+  function addTrace(trace) {
+    if (!trace || trace.length === 0) return;
+    const names = trace.map(t => t.tool).join(", ");
+    const div = document.createElement("div");
+    div.className = "trace";
+    div.textContent = "🔧 호출된 도구: " + names;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  async function checkHealth() {
+    try {
+      await fetch(API_URL, { method: "OPTIONS" });
+      statusEl.className = "ok";
+      statusText.textContent = "API 서버 연결됨 (localhost:8000)";
+    } catch (e) {
+      statusEl.className = "down";
+      statusText.textContent = "API 서버에 연결할 수 없습니다. ./run.sh api 로 먼저 서버를 켜주세요.";
+    }
+  }
+  checkHealth();
+
+  async function sendQuestion(question) {
+    addMessage("user", question);
+    input.value = "";
+    sendBtn.disabled = true;
+    const pending = addMessage("agent", "생각 중입니다...");
+    pending.classList.add("pending");
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
+      const data = await res.json();
+      pending.remove();
+      addMessage("agent", data.answer || "(답변이 비어 있습니다)");
+      addTrace(data.trace);
+      statusEl.className = "ok";
+      statusText.textContent = "API 서버 연결됨 (localhost:8000)";
+    } catch (err) {
+      pending.remove();
+      addMessage("agent", "⚠️ 요청 실패: " + err.message + "\n\nAPI 서버가 켜져 있는지(`./run.sh api`) 확인해주세요.");
+      statusEl.className = "down";
+      statusText.textContent = "API 서버에 연결할 수 없습니다.";
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q) return;
+    sendQuestion(q);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  document.getElementById("examples").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-q]");
+    if (!btn) return;
+    sendQuestion(btn.dataset.q);
+  });
+</script>
+</body>
+</html>
